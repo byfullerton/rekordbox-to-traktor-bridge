@@ -19,7 +19,7 @@ npm install
 npm install --save-dev electron @electron/packager
 ```
 
-Add these scripts to `package.json`:
+These scripts are already in `package.json`:
 
 ```json
 "main": "electron/main.cjs",

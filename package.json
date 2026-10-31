@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "electron:build-ui": "vite build --config vite.electron.config.ts",
+    "electron:start": "npm run electron:build-ui && electron .",
+    "electron:package": "npm run electron:build-ui && electron-packager . USB-NML --platform=win32 --arch=x64 --out=electron-release --overwrite --ignore=^/src --ignore=^/public --ignore=^/electron-release --ignore=^/node_modules"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -92,5 +95,6 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
     "vitest": "^4.1.10"
-  }
+  },
+  "main": "electron/main.cjs"
 }
