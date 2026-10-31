@@ -80,7 +80,7 @@ describe("NML generation", () => {
     const doc = new DOMParser().parseFromString(xml, "application/xml");
     expect(doc.getElementsByTagName("parsererror").length).toBe(0);
     expect(doc.querySelector("COLLECTION")?.getAttribute("ENTRIES")).toBe("2");
-    const loc = doc.querySelector("COLLECTION ENTRY LOCATION")!;
+    const loc = doc.querySelector('COLLECTION ENTRY[TITLE="Song"] LOCATION')!;
     expect(loc.getAttribute("VOLUME")).toBe("E:");
     expect(loc.getAttribute("DIR")).toBe("/:Contents/:DJ/:LP/:");
     const peak = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')].find((n) => n.getAttribute("NAME") === "Peak")!;
