@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { DesktopSetupDialog } from "./DesktopSetupDialog";
 import type { FileSource, Library, PlaylistNode, Track } from "@/lib/rekordbox/types";
 import { dirHandleSource, fileListSource, loadUsbLibrary } from "@/lib/rekordbox/loader";
 import { parseRekordboxXml } from "@/lib/rekordbox/xml";
@@ -141,6 +142,7 @@ export function ConverterApp() {
         </h1>
         <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to Traktor Pro 4, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <DesktopSetupDialog />
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
