@@ -142,7 +142,7 @@ export function ConverterApp() {
         </h1>
         <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to Traktor Pro 4, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          {!window.usbBridge && <DesktopSetupDialog />}
+          <DesktopSetupDialog />
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
