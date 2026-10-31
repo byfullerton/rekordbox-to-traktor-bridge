@@ -16,14 +16,15 @@ export function toTraktorKeyValue(key: string): number | null {
   if (!k) return null;
   const cam = k.match(/^(\d{1,2})\s*([AaBb])$/);
   if (cam) {
-    const n = parseInt(cam[1], 10);
+    const n = parseInt(cam[1]!, 10);
     if (n < 1 || n > 12) return null;
-    return cam[2].toUpperCase() === "A" ? CAMELOT_MINOR[n - 1] + 12 : CAMELOT_MAJOR[n - 1];
+    return cam[2]!.toUpperCase() === "A" ? CAMELOT_MINOR[n - 1]! + 12 : CAMELOT_MAJOR[n - 1]!;
   }
   const m = k.match(/^([A-Ga-g])([#b♯♭]?)\s*(m|min|minor|maj|major)?$/);
   if (!m) return null;
-  const acc = m[2] === "♯" ? "#" : m[2] === "♭" ? "B" : m[2] === "b" ? "B" : m[2];
-  const note = NOTES[(m[1].toUpperCase() + acc).toUpperCase()];
+  const a2 = m[2] ?? "";
+  const acc = a2 === "♯" ? "#" : a2 === "♭" || a2 === "b" ? "B" : a2;
+  const note = NOTES[(m[1]!.toUpperCase() + acc).toUpperCase()];
   if (note === undefined) return null;
   const minor = m[3] ? /^m(in(or)?)?$/i.test(m[3]) : false;
   return minor ? note + 12 : note;

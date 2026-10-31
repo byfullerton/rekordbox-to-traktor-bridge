@@ -9,7 +9,7 @@ export interface TraktorLocation {
 export function normalizeDrive(drive: string): string {
   const m = drive.trim().match(/^([a-zA-Z])/);
   if (!m) throw new Error(`Invalid drive letter: "${drive}"`);
-  return `${m[1].toUpperCase()}:`;
+  return `${m[1]!.toUpperCase()}:`;
 }
 
 /** Split any path flavour into clean segments ("E:\\Contents\\a.mp3", "/Contents/a.mp3", "file://localhost/E:/..."). */
@@ -33,7 +33,7 @@ export function toTraktorLocation(drive: string, relPath: string): TraktorLocati
   const vol = normalizeDrive(drive);
   const segs = pathSegments(relPath);
   if (segs.length === 0) throw new Error(`Empty path`);
-  const file = segs[segs.length - 1];
+  const file = segs[segs.length - 1]!;
   const dirs = segs.slice(0, -1);
   const DIR = "/:" + dirs.map((d) => `${d}/:`).join("");
   return { VOLUME: vol, DIR, FILE: file, VOLUMEID: vol };

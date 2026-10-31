@@ -90,7 +90,7 @@ describe("NML generation", () => {
   });
 
   it("exports only selected playlists", () => {
-    const xml = buildNml(lib, { drive: "F:", nodes: [lib.root.children[1]] });
+    const xml = buildNml(lib, { drive: "F:", nodes: [lib.root.children[1]!] });
     expect(xml).toContain('COLLECTION ENTRIES="1"');
     expect(xml).not.toContain("Peak");
     expect(xml).toContain('VOLUME="F:"');
@@ -117,7 +117,7 @@ describe("rekordbox.xml parser", () => {
     expect(t.beatgrid[0]).toEqual({ startMs: 50, bpm: 128 });
     expect(t.cues[0]).toMatchObject({ kind: "hot", slot: 1, startMs: 1500, color: "#ff0010" });
     expect(t.cues[1]).toMatchObject({ kind: "memory", loopMs: 2000 });
-    expect(lib.root.children[0].children[0]).toMatchObject({ name: "P", trackIds: [5] });
+    expect(lib.root.children[0]!.children[0]).toMatchObject({ name: "P", trackIds: [5] });
   });
 });
 
@@ -212,6 +212,6 @@ describe("PDB parser", () => {
     const t = lib.tracks.get(42)!;
     expect(t).toMatchObject({ title: "Title", artist: "Artist", bpm: 126, durationSec: 240, filePath: "/Contents/A/t.mp3" });
     expect(lib.root.children[0]).toMatchObject({ name: "Folder", isFolder: true });
-    expect(lib.root.children[0].children[0]).toMatchObject({ name: "Set", trackIds: [42] });
+    expect(lib.root.children[0]!.children[0]).toMatchObject({ name: "Set", trackIds: [42] });
   });
 });

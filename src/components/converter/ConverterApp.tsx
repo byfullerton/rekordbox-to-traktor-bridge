@@ -61,7 +61,7 @@ export function ConverterApp() {
       const root = await bridge.pickFolder();
       if (!root) return;
       const m = root.match(/^([a-zA-Z]):/);
-      if (m) setDrive(`${m[1].toUpperCase()}:`);
+      if (m) setDrive(`${m[1]!.toUpperCase()}:`);
       const base = root.replace(/[\\/]+$/, "");
       return load({ read: (p) => bridge.readFile(base + p.replace(/\//g, "\\")) }, root);
     }
