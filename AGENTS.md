@@ -8,3 +8,8 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Architecture rules
+- Rekordbox parsing and NML generation live in pure modules under `src/lib/rekordbox/` reading through a `FileSource` abstraction — keeps them testable and shared by web and Electron.
+- The Electron desktop build uses a separate plain-Vite SPA entry (`electron/renderer`, `vite.electron.config.ts`) rendering the same `ConverterApp` — TanStack Start SSR output cannot load over `file://`.
+- Electron renderer accesses the disk only via the `window.usbBridge` preload API (read-only reads plus a save dialog) — audio files are never opened or copied.
