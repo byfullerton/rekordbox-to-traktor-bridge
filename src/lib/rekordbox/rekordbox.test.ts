@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { normalizeDrive, toTraktorLocation, traktorPrimaryKey } from "./path";
 import { toTraktorKeyValue } from "./keys";
 import { buildNml, cueElements, escapeXml } from "./nml";
@@ -98,6 +98,38 @@ describe("NML generation", () => {
 
   it("escapes XML characters", () => {
     expect(escapeXml(`<a & "b">`)).toBe("&lt;a &amp; &quot;b&quot;&gt;");
+  });
+
+  it("keeps multiple selected playlists separate with their own track order", () => {
+    const folder = lib.root.children[0];
+    const peak = folder?.children[0];
+    const warmup = lib.root.children[1];
+    if (!peak || !warmup) throw new Error("Missing playlist fixtures");
+    const doc = new DOMParser().parseFromString(
+      buildNml(lib, { drive: "E:", nodes: [peak, warmup] }), "application/xml",
+    );
+    const playlists = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')];
+    expect(playlists.map((node) => node.getAttribute("NAME"))).toEqual(["Peak", "Warmup"]);
+    expect(playlists.map((node) => [...node.querySelectorAll("PRIMARYKEY")].map((key) => key.getAttribute("KEY"))))
+      .toEqual([
+        ["E:/:Contents/:x/:y.mp3", "E:/:Contents/:DJ/:LP/:Song.mp3"],
+        ["E:/:Contents/:DJ/:LP/:Song.mp3"],
+      ]);
+    expect(doc.querySelector("COLLECTION")?.getAttribute("ENTRIES")).toBe("2");
+  });
+
+  it("assigns distinct identities even when playlist IDs and counters have matching hex suffixes", async () => {
+    vi.resetModules();
+    const { buildNml: freshBuildNml } = await import("./nml");
+    const ids = [17, ...Array.from({ length: 15 }, (_, i) => i + 2), 1];
+    const nodes = ids.map((id) => ({ id, name: `Playlist ${id}`, isFolder: false, children: [], trackIds: [1] }));
+    const doc = new DOMParser().parseFromString(
+      freshBuildNml(lib, { drive: "E:", nodes }), "application/xml",
+    );
+    const uuids = [...doc.querySelectorAll("PLAYLIST")].map((node) => node.getAttribute("UUID"));
+    expect(uuids).toHaveLength(17);
+    expect(new Set(uuids).size).toBe(17);
+    expect(uuids[0]).not.toBe(uuids[16]);
   });
 });
 
