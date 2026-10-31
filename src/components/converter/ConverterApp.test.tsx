@@ -27,7 +27,7 @@ it("exports every checked playlist separately, regardless of the active playlist
   fireEvent.change(input, { target: { files: [file] } });
   fireEvent.click(await screen.findByRole("checkbox", { name: "Select First" }));
   fireEvent.click(screen.getByRole("checkbox", { name: "Select Second" }));
-  fireEvent.click(screen.getByRole("button", { name: "First", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: /^First$/ }));
   fireEvent.click(screen.getByRole("button", { name: "Export selected (2)" }));
   await waitFor(() => expect(saveFile).toHaveBeenCalledOnce());
   const xml = saveFile.mock.calls[0]?.[1];
