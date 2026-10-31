@@ -81,7 +81,8 @@ export function collectTrackIds(node: PlaylistNode, acc = new Set<number>()): Se
 let uuidCounter = 0;
 function uuid(seed: number): string {
   uuidCounter++;
-  return (seed.toString(16) + uuidCounter.toString(16)).padStart(32, "0").slice(-32);
+  // Fixed-width fields prevent different ID/counter pairs from sharing an identity.
+  return seed.toString(16).padStart(8, "0") + uuidCounter.toString(16).padStart(24, "0");
 }
 
 function nodeElement(node: PlaylistNode, lib: Library, drive: string): string {
