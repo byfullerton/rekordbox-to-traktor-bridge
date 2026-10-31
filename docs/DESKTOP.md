@@ -12,7 +12,17 @@ Converts a Rekordbox-exported USB stick into a Traktor Pro 4 `.nml` file. Audio 
 | `PIONEER/USBANLZ/**/ANLZ0000.EXT` | Extended cues with colors and comments (`PCO2`) |
 | `rekordbox.xml` (optional) | Fallback when there is no PDB |
 
-## Setup (on Windows)
+## Easiest: download the pre-built app
+
+Every push to GitHub runs `.github/workflows/build-windows-exe.yml`, which builds the app on Windows.
+
+1. Open the repository on GitHub and go to the **Actions** tab.
+2. Open the latest **Build Windows EXE** run and download the **USB-NML-Windows** artifact. The download is `USB-NML-Windows.zip`.
+3. Unzip it and run `USB-NML-win32-x64/USB-NML.exe`.
+
+You can also start a build by hand with **Run workflow** on the Actions tab. When you push a tag (for example `v1.0.0`), the zip is attached to a GitHub Release as well.
+
+## Build it yourself (on Windows)
 
 ```powershell
 npm install

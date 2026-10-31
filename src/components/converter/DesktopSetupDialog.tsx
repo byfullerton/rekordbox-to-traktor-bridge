@@ -29,6 +29,16 @@ export function DesktopSetupDialog() {
             direct native file access.
           </DialogDescription>
         </DialogHeader>
+        <div className="rounded border border-primary/50 bg-primary/10 p-3 text-sm">
+          <h3 className="font-semibold text-primary">Easiest: download the pre-built app</h3>
+          <p className="text-muted-foreground">
+            If the project is connected to GitHub, every push builds the app automatically. Open your repository's{" "}
+            <b>Actions</b> tab, choose the latest <b>Build Windows EXE</b> run, and download{" "}
+            <span className="font-mono">USB-NML-Windows.zip</span>. Unzip it and run{" "}
+            <span className="font-mono">USB-NML.exe</span>. Tagged pushes also publish the zip as a GitHub Release.
+          </p>
+        </div>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">Or build it yourself</p>
         <ol className="space-y-4 text-sm">
           <li>
             <h3 className="font-semibold">1. Download the codebase</h3>
