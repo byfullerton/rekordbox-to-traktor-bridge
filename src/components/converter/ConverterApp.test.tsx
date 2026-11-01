@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ConverterApp } from "./ConverterApp";
-import { strFromU8, unzipSync } from "fflate";
 
 afterEach(() => {
   cleanup();
@@ -10,7 +9,8 @@ afterEach(() => {
 
 it("exports every checked playlist separately, regardless of the active playlist", async () => {
   const saveFile = vi.fn().mockResolvedValue(true);
-  window.usbBridge = { pickFolder: vi.fn(), readFile: vi.fn(), saveFile };
+  const saveFiles = vi.fn().mockResolvedValue(true);
+  window.usbBridge = { pickFolder: vi.fn(), readFile: vi.fn(), saveFile, saveFiles };
   const { container } = render(<ConverterApp />);
   const input = container.querySelector('input[accept=".xml"]');
   if (!input) throw new Error("Missing XML input");
@@ -30,16 +30,14 @@ it("exports every checked playlist separately, regardless of the active playlist
   fireEvent.click(screen.getByRole("checkbox", { name: "Select Second" }));
   fireEvent.click(screen.getByRole("button", { name: /^First$/ }));
   fireEvent.click(screen.getByRole("button", { name: "Export selected (2)" }));
-  await waitFor(() => expect(saveFile).toHaveBeenCalledOnce());
-  expect(saveFile.mock.calls[0]?.[0]).toBe("usb-E-traktor.zip");
-  const data = saveFile.mock.calls[0]?.[1];
-  if (!(data instanceof Uint8Array)) throw new Error("Missing exported batch ZIP");
-  const files = unzipSync(data);
-  expect(Object.keys(files)).toEqual([
-    "Traktor Pro 4/First - Rekordbox USB.nml",
-    "Traktor Pro 4/Second - Rekordbox USB.nml",
+  await waitFor(() => expect(saveFiles).toHaveBeenCalledOnce());
+  expect(saveFile).not.toHaveBeenCalled();
+  const files = saveFiles.mock.calls[0]?.[0] as { path: string; data: string }[];
+  expect(files.map((file) => file.path)).toEqual([
+    "First - Rekordbox USB.nml",
+    "Second - Rekordbox USB.nml",
   ]);
-  const docs = Object.values(files).map((file) => new DOMParser().parseFromString(strFromU8(file), "application/xml"));
+  const docs = files.map((file) => new DOMParser().parseFromString(file.data, "application/xml"));
   expect(docs.map((doc) => doc.querySelector('NODE[NAME="$ROOT"] > SUBNODES > NODE')?.getAttribute("NAME")))
     .toEqual(["First - Rekordbox USB", "Second - Rekordbox USB"]);
   expect(docs.map((doc) => [...doc.querySelectorAll("PRIMARYKEY")].map((key) => key.getAttribute("KEY"))))
@@ -50,9 +48,9 @@ it("exports every checked playlist separately, regardless of the active playlist
   expect(new Set(docs.map((doc) => doc.querySelector("PLAYLIST")?.getAttribute("UUID"))).size).toBe(2);
   fireEvent.click(screen.getByRole("checkbox", { name: "Select Second" }));
   fireEvent.click(screen.getByRole("button", { name: "Export selected (1)" }));
-  await waitFor(() => expect(saveFile).toHaveBeenCalledTimes(2));
-  expect(saveFile.mock.calls[1]?.[0]).toBe("First - Rekordbox USB.nml");
-  expect(typeof saveFile.mock.calls[1]?.[1]).toBe("string");
+  await waitFor(() => expect(saveFile).toHaveBeenCalledOnce());
+  expect(saveFile.mock.calls[0]?.[0]).toBe("First - Rekordbox USB.nml");
+  expect(typeof saveFile.mock.calls[0]?.[1]).toBe("string");
 });
 it("hides the desktop setup button inside the desktop app", async () => {
   window.usbBridge = { pickFolder: vi.fn(), readFile: vi.fn(), saveFile: vi.fn() };
