@@ -15,7 +15,7 @@
     "test:watch": "vitest",
     "electron:build-ui": "vite build --config vite.electron.config.ts",
     "electron:start": "npm run electron:build-ui && electron .",
-    "electron:package": "npm run electron:build-ui && electron-packager . USB-NML --platform=win32 --arch=x64 --out=electron-release --overwrite --ignore=^/src --ignore=^/public --ignore=^/electron-release --ignore=^/node_modules"
+    "electron:package": "npm run electron:build-ui && electron-packager . USB-NML --platform=win32 --arch=x64 --out=electron-release --overwrite --icon=electron/icon.ico --ignore=^/src --ignore=^/public --ignore=^/electron-release --ignore=^/node_modules"
   },
   "overrides": {
     "rolldown": "1.2.1"

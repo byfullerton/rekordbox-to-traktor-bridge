@@ -8,7 +8,8 @@ function createWindow() {
     width: 1400,
     height: 900,
     backgroundColor: "#16181f",
-    title: "USB→NML",
+    title: "USB DJ Bridge",
+    icon: path.join(__dirname, "icon.ico"),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
