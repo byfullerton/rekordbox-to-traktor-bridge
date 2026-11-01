@@ -50,6 +50,9 @@ export function ConverterApp() {
   const [track, setTrack] = useState<Track | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [showSmartScreenHint, setShowSmartScreenHint] = useState(false);
+  const [showDriveCheck, setShowDriveCheck] = useState(false);
+  /** Web visitors confirm the drive letter before choosing the USB; desktop detects it. */
+  const openUsb = () => (window.usbBridge ? void pickDrive() : setShowDriveCheck(true));
   useEffect(() => setIsDesktop(!!window.usbBridge), []);
   const dirInput = useRef<HTMLInputElement>(null);
   const xmlInput = useRef<HTMLInputElement>(null);
@@ -221,7 +224,7 @@ export function ConverterApp() {
               </select>
             </label>
           )}
-          <Button onClick={pickDrive} size="sm">
+          <Button onClick={openUsb} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
           <span className="text-xs text-muted-foreground">or</span>
@@ -286,7 +289,7 @@ export function ConverterApp() {
             <span className="font-mono">PIONEER/rekordbox/export.pdb</span> and the analysis files, then build playlists
             for Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, or M3U8 that point at the audio on the stick.
           </p>
-          <Button onClick={pickDrive}>
+          <Button onClick={openUsb}>
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
         </div>
@@ -351,6 +354,51 @@ export function ConverterApp() {
           <aside className="hidden overflow-auto border-l border-border bg-card/50 p-4 lg:block">
             {track ? <TrackDetail track={track} drive={drive} /> : <p className="text-sm text-muted-foreground">Select a track to see its cues and file location.</p>}
           </aside>
+        </div>
+      )}
+
+      {showDriveCheck && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Verify drive letter"
+        >
+          <div className="w-full max-w-md space-y-4 rounded-lg border border-border bg-card p-6 shadow-lg">
+            <h2 className="font-display text-lg font-bold">First, check your USB drive letter</h2>
+            <p className="text-sm text-muted-foreground">
+              Web browsers can't detect drive letters. Open <strong className="text-foreground">This PC</strong> in File Explorer on the
+              computer running your DJ software, find the USB stick, and pick the same letter here. If they don't match, your DJ software
+              won't find the tracks.
+            </p>
+            <label className="flex items-center gap-2 text-sm">
+              <HardDrive className="h-4 w-4" /> USB drive letter
+              <select
+                aria-label="Drive letter to verify"
+                value={drive}
+                onChange={(e) => setDrive(e.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-2 font-mono text-sm text-foreground"
+              >
+                {"DEFGHIJKLMNOPQRSTUVWXYZABC".split("").map((l) => (
+                  <option key={l} value={`${l}:`}>{l}:</option>
+                ))}
+              </select>
+            </label>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={() => setShowDriveCheck(false)}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setShowDriveCheck(false);
+                  void pickDrive();
+                }}
+              >
+                <Usb className="h-4 w-4" /> {drive} is correct, open USB
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
