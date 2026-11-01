@@ -40,5 +40,47 @@ ipcMain.handle("save-file", async (_e, name, contents) => {
   return true;
 });
 
+// ---- Auto-update: checks GitHub Releases, downloads the new installer, and runs it silently.
+const { spawn } = require("node:child_process");
+const os = require("node:os");
+const { LATEST_RELEASE_API, ASSET_NAME, evaluateRelease } = require("./update.cjs");
+let pendingUpdate = null;
+
+async function checkForUpdates() {
+  try {
+    const res = await fetch(LATEST_RELEASE_API, {
+      headers: { Accept: "application/vnd.github+json", "User-Agent": "USB-DJ-Bridge" },
+    });
+    if (!res.ok) return { available: false, current: app.getVersion(), error: `Update server returned ${res.status}` };
+    const result = evaluateRelease(await res.json(), app.getVersion());
+    pendingUpdate = result.available ? result : null;
+    return result;
+  } catch (e) {
+    return { available: false, current: app.getVersion(), error: String(e?.message || e) };
+  }
+}
+
+ipcMain.handle("app-version", () => app.getVersion());
+ipcMain.handle("check-updates", () => checkForUpdates());
+ipcMain.handle("install-update", async () => {
+  const update = pendingUpdate || (await checkForUpdates());
+  if (!update?.available) return { ok: false, error: "No update available" };
+  try {
+    const res = await fetch(update.url, { headers: { "User-Agent": "USB-DJ-Bridge" } });
+    if (!res.ok) return { ok: false, error: `Download failed (${res.status})` };
+    const file = path.join(os.tmpdir(), `${update.latest}-${ASSET_NAME}`);
+    await fs.writeFile(file, Buffer.from(await res.arrayBuffer()));
+    // Silent install over the current version; the installer relaunches the app when done.
+    spawn(file, ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"], {
+      detached: true,
+      stdio: "ignore",
+    }).unref();
+    setTimeout(() => app.quit(), 500);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: String(e?.message || e) };
+  }
+});
+
 app.whenReady().then(createWindow);
 app.on("window-all-closed", () => app.quit());

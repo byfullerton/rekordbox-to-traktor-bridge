@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { DesktopSetupDialog } from "./DesktopSetupDialog";
+import { UpdateButton, type UpdaterBridge } from "./UpdateButton";
 
 export const WINDOWS_DOWNLOAD_URL =
   "https://github.com/byfullerton/rekordbox-to-traktor-bridge/releases/latest/download/USB-DJ-Bridge-Setup.exe";
@@ -19,6 +20,8 @@ interface UsbBridge {
   pickFolder(): Promise<string | null>;
   readFile(absPath: string): Promise<Uint8Array | null>;
   saveFile(name: string, contents: string): Promise<boolean>;
+  checkForUpdates?: UpdaterBridge["checkForUpdates"];
+  installUpdate?: UpdaterBridge["installUpdate"];
 }
 declare global {
   interface Window {
@@ -166,6 +169,7 @@ export function ConverterApp() {
             </Button>
           )}
           {!isDesktop && <DesktopSetupDialog />}
+          {isDesktop && window.usbBridge?.checkForUpdates && <UpdateButton bridge={window.usbBridge as UpdaterBridge} />}
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
