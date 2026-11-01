@@ -156,9 +156,9 @@ export function ConverterApp() {
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-3">
-        <img src={logoAsset.url} alt="USB DJ Bridge logo" className="h-8 w-8 rounded" />
+        <img src={logoAsset.url} alt="Universal Playlist Reader logo" className="h-8 w-8 rounded" />
         <h1 className="font-display text-lg font-bold tracking-tight">
-          USB<span className="text-primary">→</span>NML
+          Universal Playlist <span className="text-primary">Reader</span>
         </h1>
         <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to any DJ software, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
