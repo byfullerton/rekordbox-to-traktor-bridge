@@ -2,6 +2,8 @@
 const { app, BrowserWindow, dialog, ipcMain } = require("electron");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { validateExportFiles, saveExportFiles } = require("./export-files.cjs");
+let usbRoot;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -22,7 +24,9 @@ function createWindow() {
 
 ipcMain.handle("pick-folder", async () => {
   const r = await dialog.showOpenDialog({ title: "Select the Rekordbox USB drive (e.g. E:\\)", properties: ["openDirectory"] });
-  return r.canceled ? null : r.filePaths[0];
+  if (r.canceled || !r.filePaths[0]) return null;
+  usbRoot = r.filePaths[0];
+  return usbRoot;
 });
 
 // Read-only access: only metadata files are read; audio is never opened or copied.
@@ -39,6 +43,18 @@ ipcMain.handle("save-file", async (_e, name, contents) => {
   const r = await dialog.showSaveDialog({ defaultPath: path.basename(name), filters: [{ name: "DJ playlist export", extensions: [extension] }] });
   if (r.canceled || !r.filePath) return false;
   await fs.writeFile(r.filePath, typeof contents === "string" ? contents : Buffer.from(contents));
+  return true;
+});
+
+ipcMain.handle("save-files", async (_e, files) => {
+  validateExportFiles(files);
+  const r = await dialog.showOpenDialog({
+    title: "Save playlists to folder",
+    defaultPath: usbRoot,
+    properties: ["openDirectory", "createDirectory"],
+  });
+  if (r.canceled || !r.filePaths[0]) return false;
+  await saveExportFiles(fs, r.filePaths[0], files);
   return true;
 });
 
