@@ -45,17 +45,45 @@ describe("multi-software exporters", () => {
 
   it("keeps every playlist as its own file, even with duplicate names", () => {
     const files = buildTarget(lib, "m3u8", opts).map((f) => f.path);
-    expect(files).toEqual(["Warmup - Rekordbox USB.m3u8", "Club - Peak - Rekordbox USB.m3u8", "Warmup (2) - Rekordbox USB.m3u8"]);
+    expect(files).toEqual(["Warmup - Rekordbox USB.m3u8", "Peak - Rekordbox USB.m3u8", "Warmup (2) - Rekordbox USB.m3u8"]);
     expect(buildTarget(lib, "serato", opts).map((f) => f.path)).toContain("Subcrates/Club%%Peak - Rekordbox USB.crate");
   });
 
   it("bundles all software into separate folders", () => {
     const z = unzipSync(buildZip(lib, TARGETS.map((t) => t.id), opts));
     const names = Object.keys(z);
-    expect(names).toContain("Traktor Pro 4/rekordbox-usb-F.nml");
-    expect(names).toContain("Mixxx/Club - Peak - Rekordbox USB.m3u8");
+    expect(names).toContain("Traktor Pro 4/Warmup - Rekordbox USB.nml");
+    expect(names).toContain("Traktor Pro 4/Peak - Rekordbox USB.nml");
+    expect(names).toContain("Traktor Pro 4/Warmup (2) - Rekordbox USB.nml");
+    expect(names).toContain("Mixxx/Peak - Rekordbox USB.m3u8");
     expect(names).toContain("VirtualDJ/Warmup (2) - Rekordbox USB.vdjfolder");
     expect(strFromU8(z["Engine DJ/Warmup (2) - Rekordbox USB.m3u8"]!)).not.toContain("one.mp3");
+  });
+
+  it("exports each Traktor playlist as its own named, directly importable NML", () => {
+    const files = buildTarget(lib, "traktor", opts);
+    expect(files.map((file) => file.path)).toEqual([
+      "Warmup - Rekordbox USB.nml", "Peak - Rekordbox USB.nml", "Warmup (2) - Rekordbox USB.nml",
+    ]);
+    const docs = files.map((file) => new DOMParser().parseFromString(String(file.data), "application/xml"));
+    expect(docs.map((doc) => doc.querySelectorAll('NODE[TYPE="PLAYLIST"]').length)).toEqual([1, 1, 1]);
+    expect(docs.map((doc) => doc.querySelector('NODE[NAME="$ROOT"] > SUBNODES > NODE')?.getAttribute("NAME")))
+      .toEqual(["Warmup - Rekordbox USB", "Peak - Rekordbox USB", "Warmup - Rekordbox USB"]);
+    expect(docs.map((doc) => [...doc.querySelectorAll("PRIMARYKEY")].map((key) => key.getAttribute("KEY"))))
+      .toEqual([
+        ["F:/:Contents/:A/:one.mp3", "F:/:Contents/:B/:two & co.mp3"],
+        ["F:/:Contents/:B/:two & co.mp3"],
+        ["F:/:Contents/:B/:two & co.mp3"],
+      ]);
+  });
+
+  it.each(TARGETS.map((target) => target.id))("does not overwrite colliding playlist names in a %s batch", (target) => {
+    const nodes = [pl(1, "Set", [1]), pl(2, "Set", [2]), pl(3, "Set (2)", [1]), pl(4, "set", [2])];
+    const files = buildTarget(lib, target, { ...opts, nodes });
+    expect(new Set(files.map((file) => file.path.toLowerCase())).size).toBe(4);
+    expect(files[1]?.path).toContain("Set (3) - Rekordbox USB");
+    expect(files[2]?.path).toContain("Set (2) - Rekordbox USB");
+    expect(Object.keys(unzipSync(buildZip(lib, [target], { ...opts, nodes })))).toHaveLength(4);
   });
 });
 

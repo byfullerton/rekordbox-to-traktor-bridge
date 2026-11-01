@@ -35,9 +35,10 @@ ipcMain.handle("read-file", async (_e, absPath) => {
 });
 
 ipcMain.handle("save-file", async (_e, name, contents) => {
-  const r = await dialog.showSaveDialog({ defaultPath: name, filters: [{ name: "Traktor NML", extensions: ["nml"] }] });
+  const extension = path.extname(name).slice(1);
+  const r = await dialog.showSaveDialog({ defaultPath: path.basename(name), filters: [{ name: "DJ playlist export", extensions: [extension] }] });
   if (r.canceled || !r.filePath) return false;
-  await fs.writeFile(r.filePath, contents, "utf8");
+  await fs.writeFile(r.filePath, typeof contents === "string" ? contents : Buffer.from(contents));
   return true;
 });
 

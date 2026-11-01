@@ -55,12 +55,18 @@ function tracksOf(lib: Library, node: PlaylistNode): Track[] {
 
 /** Give every playlist a unique file name so two same-named playlists never overwrite each other. */
 function uniqueNames(items: { names: string[] }[], sep: string): string[] {
-  const seen = new Map<string, number>();
+  const used = new Set<string>();
+  const reserved = new Set(items.map(({ names }) => names.map(safeName).join(sep).toLowerCase()));
   return items.map(({ names }) => {
     const base = names.map(safeName).join(sep);
-    const n = (seen.get(base.toLowerCase()) ?? 0) + 1;
-    seen.set(base.toLowerCase(), n);
-    return n === 1 ? base : `${base} (${n})`;
+    let name = base;
+    let n = 2;
+    // A generated name must not overwrite another generated or original name.
+    while (used.has(name.toLowerCase()) || (name !== base && reserved.has(name.toLowerCase()))) {
+      name = `${base} (${n++})`;
+    }
+    used.add(name.toLowerCase());
+    return name;
   });
 }
 
@@ -126,16 +132,17 @@ export function buildSeratoCrate(tracks: Track[]): Uint8Array {
 
 export function buildTarget(lib: Library, target: TargetId, opts: ExportOptions): ExportFile[] {
   const drive = normalizeDrive(opts.drive);
-  if (target === "traktor") {
-    return [{ path: `rekordbox-usb-${drive[0]}.nml`, data: buildNml(lib, { drive, nodes: opts.nodes, folderName: opts.folderName }) }];
-  }
   const items = flattenPlaylists(opts.nodes);
   // Serato encodes folder nesting with "%%" in crate file names.
-  const names = uniqueNames(items, target === "serato" ? "%%" : " - ").map((n) => `${n}${PLAYLIST_SUFFIX}`);
+  const namingItems = target === "serato" ? items : items.map(({ node }) => ({ names: [node.name] }));
+  const names = uniqueNames(namingItems, target === "serato" ? "%%" : " - ").map((n) => `${n}${PLAYLIST_SUFFIX}`);
   return items.map(({ node }, i) => {
     const tracks = tracksOf(lib, node);
-    const name = names[i]!;
+    const name = names[i];
+    if (!name) throw new Error("Missing playlist export name");
     switch (target) {
+      case "traktor":
+        return { path: `${name}.nml`, data: buildNml(lib, { drive, nodes: [node] }) };
       case "virtualdj":
         return { path: `${name}.vdjfolder`, data: buildVdjFolder(tracks, drive) };
       case "serato":
@@ -150,7 +157,8 @@ export function buildTarget(lib: Library, target: TargetId, opts: ExportOptions)
 export function buildZip(lib: Library, targets: TargetId[], opts: ExportOptions): Uint8Array {
   const entries: Record<string, Uint8Array> = {};
   for (const id of targets) {
-    const label = TARGETS.find((t) => t.id === id)!.label;
+    const label = TARGETS.find((t) => t.id === id)?.label;
+    if (!label) throw new Error("Unknown export target");
     for (const f of buildTarget(lib, id, opts)) {
       entries[`${label}/${f.path}`] = typeof f.data === "string" ? strToU8(f.data) : f.data;
     }
