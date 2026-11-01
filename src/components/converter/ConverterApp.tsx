@@ -207,6 +207,7 @@ export function ConverterApp() {
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
+          <span className="text-xs text-muted-foreground">or</span>
           <Button variant="secondary" size="sm" onClick={() => xmlInput.current?.click()}>
             Load rekordbox.xml
           </Button>
@@ -230,7 +231,7 @@ export function ConverterApp() {
               <option value="all">All software</option>
             </select>
           </label>
-          <Button size="sm" variant="outline" disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
+          <Button size="sm" variant={lib && checked.size > 0 ? "exportReady" : "outline"} disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
             <Download className="h-4 w-4" /> Export selected ({checked.size})
           </Button>
           <Button size="sm" disabled={!lib || exporting} onClick={() => exportNml(true)}>
