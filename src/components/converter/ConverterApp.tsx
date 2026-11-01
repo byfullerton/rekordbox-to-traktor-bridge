@@ -204,7 +204,7 @@ export function ConverterApp() {
             </Button>
           )}
         </div>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-center gap-2">
           {isDesktop && window.usbBridge?.checkForUpdates && <UpdateButton bridge={window.usbBridge as UpdaterBridge} />}
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
@@ -233,12 +233,14 @@ export function ConverterApp() {
               <option value="all">All software</option>
             </select>
           </label>
+          <div className="flex shrink-0 items-center gap-2">
           <Button size="sm" variant={lib && checked.size > 0 ? "exportReady" : "outline"} disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
             <Download className="h-4 w-4" /> Export selected ({checked.size})
           </Button>
           <Button size="sm" disabled={!lib || exporting} onClick={() => exportNml(true)}>
             <Download className="h-4 w-4" /> Export all
           </Button>
+          </div>
         </div>
         <input
           ref={dirInput}
