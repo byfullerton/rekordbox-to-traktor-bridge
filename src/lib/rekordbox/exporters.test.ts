@@ -58,3 +58,27 @@ describe("multi-software exporters", () => {
     expect(strFromU8(z["Engine DJ/Warmup (2).m3u8"]!)).not.toContain("one.mp3");
   });
 });
+
+import { describe as d2, it as i2, expect as e2 } from "vitest";
+import { buildTarget as bt2 } from "./exporters";
+import { buildNml as bn2 } from "./nml";
+d2("playlist name suffix", () => {
+  const lib = {
+    tracks: new Map([[1, { id: 1, title: "T", artist: "A", album: "", genre: "", bpm: 120, key: "", durationSec: 60, bitrate: 320, filePath: "/Contents/t.mp3", cues: [], beatgrid: [] }]]),
+    root: { id: 0, name: "root", isFolder: true, trackIds: [], children: [] },
+  } as never;
+  const nodes = [
+    { id: 1, name: "Techno", isFolder: false, trackIds: [1], children: [] },
+    { id: 2, name: "House", isFolder: false, trackIds: [1], children: [] },
+  ];
+  i2("appends ' - Rekordbox USB' to each separate playlist file", () => {
+    const files = bt2(lib, "m3u8", { drive: "E", nodes, folderName: "x" });
+    e2(files.map((f) => f.path)).toEqual(["Techno - Rekordbox USB.m3u8", "House - Rekordbox USB.m3u8"]);
+    e2(bt2(lib, "serato", { drive: "E", nodes, folderName: "x" })[0]!.path).toBe("Subcrates/Techno - Rekordbox USB.crate");
+  });
+  i2("appends the suffix to Traktor playlist names", () => {
+    const nml = bn2(lib, { drive: "E", nodes });
+    e2(nml).toContain('NAME="Techno - Rekordbox USB"');
+    e2(nml).toContain('NAME="House - Rekordbox USB"');
+  });
+});

@@ -4,3 +4,5 @@
 - [x] Run regression tests and the full test suite.
 - [x] In-app "Download for Windows" button serving the single setup .exe
 - [x] Desktop app checks for updates and installs them automatically
+- [x] Blue buttons matching muzicspace.com, new logo and tab icon
+- [x] Exported playlists named "<name> - Rekordbox USB"
