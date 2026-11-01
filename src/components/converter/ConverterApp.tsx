@@ -206,6 +206,19 @@ export function ConverterApp() {
         </div>
         <div className="flex w-full flex-wrap items-center justify-center gap-2">
           {isDesktop && window.usbBridge?.checkForUpdates && <UpdateButton bridge={window.usbBridge as UpdaterBridge} />}
+          <label className="flex items-center gap-1 text-xs text-muted-foreground">
+            <HardDrive className="h-4 w-4" /> Drive
+            <select
+              aria-label="Drive letter"
+              value={drive}
+              onChange={(e) => setDrive(e.target.value)}
+              className="h-8 rounded-md border border-input bg-background px-2 font-mono text-xs text-foreground"
+            >
+              {"DEFGHIJKLMNOPQRSTUVWXYZABC".split("").map((l) => (
+                <option key={l} value={`${l}:`}>{l}:</option>
+              ))}
+            </select>
+          </label>
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
@@ -213,10 +226,6 @@ export function ConverterApp() {
           <Button variant="secondary" size="sm" onClick={() => xmlInput.current?.click()}>
             Load rekordbox.xml
           </Button>
-          <label className="flex items-center gap-1 text-xs text-muted-foreground">
-            <HardDrive className="h-4 w-4" /> Drive
-            <Input value={drive} onChange={(e) => setDrive(e.target.value)} className="h-8 w-14 font-mono" aria-label="Drive letter" />
-          </label>
           <label className="flex items-center gap-1 text-xs text-muted-foreground">
             For
             <select
