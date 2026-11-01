@@ -164,7 +164,13 @@ export function ConverterApp() {
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isDesktop && (
             <Button asChild size="sm">
-              <a href={WINDOWS_DOWNLOAD_URL}>
+              <a
+                href={WINDOWS_DOWNLOAD_URL}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowSmartScreenHint(true);
+                }}
+              >
                 <Download className="h-4 w-4" /> Want to use this tool offline? Download for Windows here
               </a>
             </Button>
