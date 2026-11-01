@@ -59,3 +59,18 @@ it("links the Windows download straight to the latest setup file", () => {
     "https://github.com/byfullerton/rekordbox-to-traktor-bridge/releases/latest/download/USB-DJ-Bridge-Setup.exe",
   );
 });
+
+it("shows the SmartScreen note only after clicking download, then starts the download", () => {
+  render(<ConverterApp />);
+  expect(screen.queryByRole("dialog")).toBeNull();
+  fireEvent.click(screen.getByRole("link", { name: /Download for Windows/ }));
+  const dialog = screen.getByRole("dialog");
+  expect(dialog.textContent).toContain("More info");
+  expect(dialog.textContent).toContain("Run anyway");
+  const downloadNow = screen.getByRole("link", { name: /Download now/ });
+  expect(downloadNow.getAttribute("href")).toBe(
+    "https://github.com/byfullerton/rekordbox-to-traktor-bridge/releases/latest/download/USB-DJ-Bridge-Setup.exe",
+  );
+  fireEvent.click(downloadNow);
+  expect(screen.queryByRole("dialog")).toBeNull();
+});
