@@ -21,6 +21,7 @@ Every push to GitHub runs `.github/workflows/build-windows-exe.yml`, which build
 3. Run `USB-DJ-Bridge-Setup.exe`. It installs the app and its support files into `%LOCALAPPDATA%\Programs\USB DJ Bridge`, adds Start menu and desktop shortcuts, and registers an uninstaller. No admin rights needed.
 
 You can also start a build by hand with **Run workflow** on the Actions tab. When you push a tag (for example `v1.0.0`), the setup file is attached to a GitHub Release as well.
+Pushing a new package version to `main` also publishes its release after packaging succeeds; pushes with an already released version build artifacts without replacing that release. The installer build checks that the offline logo is embedded before publishing.
 
 ## Build it yourself (on Windows)
 

@@ -16,3 +16,4 @@
 - NML playlist identities use fixed-width ID and counter fields — variable-width concatenation can collide and cause importers to treat distinct playlists as one.
 - All targets live in `src/lib/rekordbox/exporters.ts`, writing one importer-facing file per leaf playlist with collision-safe names; batch exports save directly to folders through Electron IPC or browser directory handles, falling back to individual browser downloads — no unzip step or merged playlists.
 - The desktop Vite build embeds the CDN logo pointer as a data URL at build time and fails if the asset is unavailable — the supplied logo renders offline without duplicating binary assets in source.
+- Windows CI publishes a release after a successful main-branch build when the package version has no existing tag; version tags also publish installers — version bumps ship the tested source rather than releasing an older sync state.
