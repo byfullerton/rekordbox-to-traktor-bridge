@@ -1,6 +1,7 @@
 import { zipSync, strToU8 } from "fflate";
 import type { Library, PlaylistNode, Track } from "./types";
-import { buildNml, escapeXml } from "./nml";
+import { buildNml, escapeXml, PLAYLIST_SUFFIX } from "./nml";
+export { PLAYLIST_SUFFIX };
 import { normalizeDrive, pathSegments } from "./path";
 
 export type TargetId = "traktor" | "virtualdj" | "serato" | "engine" | "djay" | "mixxx" | "m3u8";
@@ -130,7 +131,7 @@ export function buildTarget(lib: Library, target: TargetId, opts: ExportOptions)
   }
   const items = flattenPlaylists(opts.nodes);
   // Serato encodes folder nesting with "%%" in crate file names.
-  const names = uniqueNames(items, target === "serato" ? "%%" : " - ");
+  const names = uniqueNames(items, target === "serato" ? "%%" : " - ").map((n) => `${n}${PLAYLIST_SUFFIX}`);
   return items.map(({ node }, i) => {
     const tracks = tracksOf(lib, node);
     const name = names[i]!;
@@ -140,7 +141,7 @@ export function buildTarget(lib: Library, target: TargetId, opts: ExportOptions)
       case "serato":
         return { path: `Subcrates/${name}.crate`, data: buildSeratoCrate(tracks) };
       default:
-        return { path: `${name}.m3u8`, data: buildM3u8(tracks, drive, node.name) };
+        return { path: `${name}.m3u8`, data: buildM3u8(tracks, drive, `${node.name}${PLAYLIST_SUFFIX}`) };
     }
   });
 }

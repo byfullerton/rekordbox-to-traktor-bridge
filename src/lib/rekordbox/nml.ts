@@ -78,6 +78,9 @@ export function collectTrackIds(node: PlaylistNode, acc = new Set<number>()): Se
   return acc;
 }
 
+/** Appended to every exported playlist name so DJ software shows where it came from. */
+export const PLAYLIST_SUFFIX = " - Rekordbox USB";
+
 let uuidCounter = 0;
 function uuid(seed: number): string {
   uuidCounter++;
@@ -95,7 +98,7 @@ function nodeElement(node: PlaylistNode, lib: Library, drive: string): string {
     .filter((t): t is Track => !!t && !!t.filePath)
     .map((t) => traktorPrimaryKey(toTraktorLocation(drive, t.filePath)));
   const entries = keys.map((k) => `<ENTRY>\n<PRIMARYKEY ${attrs({ TYPE: "TRACK", KEY: k })}></PRIMARYKEY>\n</ENTRY>`);
-  return `<NODE ${attrs({ TYPE: "PLAYLIST", NAME: node.name })}>\n<PLAYLIST ${attrs({ ENTRIES: entries.length, TYPE: "LIST", UUID: uuid(node.id) })}>\n${entries.join("\n")}\n</PLAYLIST>\n</NODE>`;
+  return `<NODE ${attrs({ TYPE: "PLAYLIST", NAME: `${node.name}${PLAYLIST_SUFFIX}` })}>\n<PLAYLIST ${attrs({ ENTRIES: entries.length, TYPE: "LIST", UUID: uuid(node.id) })}>\n${entries.join("\n")}\n</PLAYLIST>\n</NODE>`;
 }
 
 export interface NmlOptions {

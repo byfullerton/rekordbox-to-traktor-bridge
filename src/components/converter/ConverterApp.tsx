@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, Disc3, Download, Folder, FolderOpen, HardDrive, ListMusic, Usb } from "lucide-react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -155,7 +156,7 @@ export function ConverterApp() {
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-3">
-        <Disc3 className="h-6 w-6 text-primary" />
+        <img src={logoAsset.url} alt="USB DJ Bridge logo" className="h-8 w-8 rounded" />
         <h1 className="font-display text-lg font-bold tracking-tight">
           USB<span className="text-primary">→</span>NML
         </h1>
