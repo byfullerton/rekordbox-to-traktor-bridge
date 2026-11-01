@@ -34,7 +34,7 @@ it("exports every checked playlist separately, regardless of the active playlist
   if (typeof xml !== "string") throw new Error("Missing exported NML");
   const doc = new DOMParser().parseFromString(xml, "application/xml");
   const playlists = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')];
-  expect(playlists.map((node) => node.getAttribute("NAME"))).toEqual(["First", "Second"]);
+  expect(playlists.map((node) => node.getAttribute("NAME"))).toEqual(["First - Rekordbox USB", "Second - Rekordbox USB"]);
   expect(playlists.map((node) => [...node.querySelectorAll("PRIMARYKEY")].map((key) => key.getAttribute("KEY"))))
     .toEqual([
       ["E:/:Contents/:two.mp3", "E:/:Contents/:one.mp3"],

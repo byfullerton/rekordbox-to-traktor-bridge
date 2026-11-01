@@ -45,17 +45,17 @@ describe("multi-software exporters", () => {
 
   it("keeps every playlist as its own file, even with duplicate names", () => {
     const files = buildTarget(lib, "m3u8", opts).map((f) => f.path);
-    expect(files).toEqual(["Warmup.m3u8", "Club - Peak.m3u8", "Warmup (2).m3u8"]);
-    expect(buildTarget(lib, "serato", opts).map((f) => f.path)).toContain("Subcrates/Club%%Peak.crate");
+    expect(files).toEqual(["Warmup - Rekordbox USB.m3u8", "Club - Peak - Rekordbox USB.m3u8", "Warmup (2) - Rekordbox USB.m3u8"]);
+    expect(buildTarget(lib, "serato", opts).map((f) => f.path)).toContain("Subcrates/Club%%Peak - Rekordbox USB.crate");
   });
 
   it("bundles all software into separate folders", () => {
     const z = unzipSync(buildZip(lib, TARGETS.map((t) => t.id), opts));
     const names = Object.keys(z);
     expect(names).toContain("Traktor Pro 4/rekordbox-usb-F.nml");
-    expect(names).toContain("Mixxx/Club - Peak.m3u8");
-    expect(names).toContain("VirtualDJ/Warmup (2).vdjfolder");
-    expect(strFromU8(z["Engine DJ/Warmup (2).m3u8"]!)).not.toContain("one.mp3");
+    expect(names).toContain("Mixxx/Club - Peak - Rekordbox USB.m3u8");
+    expect(names).toContain("VirtualDJ/Warmup (2) - Rekordbox USB.vdjfolder");
+    expect(strFromU8(z["Engine DJ/Warmup (2) - Rekordbox USB.m3u8"]!)).not.toContain("one.mp3");
   });
 });
 

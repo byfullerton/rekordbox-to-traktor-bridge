@@ -83,7 +83,7 @@ describe("NML generation", () => {
     const loc = doc.querySelector('COLLECTION ENTRY[TITLE="Song"] LOCATION')!;
     expect(loc.getAttribute("VOLUME")).toBe("E:");
     expect(loc.getAttribute("DIR")).toBe("/:Contents/:DJ/:LP/:");
-    const peak = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')].find((n) => n.getAttribute("NAME") === "Peak")!;
+    const peak = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')].find((n) => n.getAttribute("NAME") === "Peak - Rekordbox USB")!;
     const keys = [...peak.querySelectorAll("PRIMARYKEY")].map((k) => k.getAttribute("KEY"));
     expect(keys).toEqual(["E:/:Contents/:x/:y.mp3", "E:/:Contents/:DJ/:LP/:Song.mp3"]);
     expect(doc.querySelector('ENTRY[TITLE]')?.querySelector("MUSICAL_KEY")?.getAttribute("VALUE")).toBe("21");
@@ -109,7 +109,7 @@ describe("NML generation", () => {
       buildNml(lib, { drive: "E:", nodes: [peak, warmup] }), "application/xml",
     );
     const playlists = [...doc.querySelectorAll('NODE[TYPE="PLAYLIST"]')];
-    expect(playlists.map((node) => node.getAttribute("NAME"))).toEqual(["Peak", "Warmup"]);
+    expect(playlists.map((node) => node.getAttribute("NAME"))).toEqual(["Peak - Rekordbox USB", "Warmup - Rekordbox USB"]);
     expect(playlists.map((node) => [...node.querySelectorAll("PRIMARYKEY")].map((key) => key.getAttribute("KEY"))))
       .toEqual([
         ["E:/:Contents/:x/:y.mp3", "E:/:Contents/:DJ/:LP/:Song.mp3"],
