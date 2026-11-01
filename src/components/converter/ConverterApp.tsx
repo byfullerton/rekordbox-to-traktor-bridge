@@ -158,7 +158,7 @@ export function ConverterApp() {
       <header className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-3">
         <img src={logoAsset.url} alt="USB DJ Bridge logo" className="h-8 w-8 rounded" />
         <h1 className="font-display text-lg font-bold tracking-tight">
-          USB DJ <span className="text-primary">Bridge</span>
+          USB <span className="text-primary">DJ Bridge</span>
         </h1>
         <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to any DJ software, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
