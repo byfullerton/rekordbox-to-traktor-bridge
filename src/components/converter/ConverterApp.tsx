@@ -164,7 +164,7 @@ export function ConverterApp() {
           {!isDesktop && (
             <Button asChild size="sm">
               <a href={WINDOWS_DOWNLOAD_URL}>
-                <Download className="h-4 w-4" /> Download for Windows
+                <Download className="h-4 w-4" /> Want to use this tool offline? Download for Windows here
               </a>
             </Button>
           )}
