@@ -92,6 +92,13 @@ export function parsePdb(buf: Uint8Array): Library {
   const tracks = new Map<number, Track>();
   for (const r of tableRows(v, TABLE.TRACKS)) {
     const str = (i: number) => s(r + v.getUint16(r + 94 + i * 2, true));
+    const strSafe = (i: number) => {
+      try {
+        return str(i);
+      } catch {
+        return "";
+      }
+    };
     const id = v.getUint32(r + 72, true);
     tracks.set(id, {
       id,
@@ -99,6 +106,7 @@ export function parsePdb(buf: Uint8Array): Library {
       artist: artists.get(v.getUint32(r + 68, true)) ?? "",
       album: albums.get(v.getUint32(r + 64, true)) ?? "",
       genre: genres.get(v.getUint32(r + 60, true)) ?? "",
+      comment: strSafe(16),
       bpm: v.getUint32(r + 56, true) / 100,
       key: keys.get(v.getUint32(r + 32, true)) ?? "",
       durationSec: v.getUint16(r + 84, true),

@@ -58,6 +58,7 @@ export function entryElement(track: Track, drive: string): string {
     `<INFO ${attrs({
       BITRATE: track.bitrate ? track.bitrate * 1000 : undefined,
       GENRE: track.genre,
+      COMMENT: track.comment,
       KEY: track.key,
       PLAYTIME: track.durationSec ? Math.round(track.durationSec) : undefined,
       PLAYTIME_FLOAT: track.durationSec ? track.durationSec.toFixed(6) : undefined,

@@ -36,6 +36,7 @@ export function parseRekordboxXml(xml: string): Library {
       artist: str(t, "Artist"),
       album: str(t, "Album"),
       genre: str(t, "Genre"),
+      comment: str(t, "Comments"),
       bpm: num(t, "AverageBpm"),
       key: str(t, "Tonality"),
       durationSec: num(t, "TotalTime"),

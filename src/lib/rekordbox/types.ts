@@ -23,6 +23,8 @@ export interface Track {
   artist: string;
   album: string;
   genre: string;
+  /** Free-text comment from the Rekordbox Comments column */
+  comment?: string;
   bpm: number;
   /** Musical key text, e.g. "Am", "F#", "8A" */
   key: string;
