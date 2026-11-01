@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronRight, Disc3, Download, Folder, FolderOpen, HardDrive, ListMusic, Usb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,8 @@ export function ConverterApp() {
   const [active, setActive] = useState<PlaylistNode | null>(null);
   const [target, setTarget] = useState<TargetId | "all">("traktor");
   const [track, setTrack] = useState<Track | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => setIsDesktop(!!window.usbBridge), []);
   const dirInput = useRef<HTMLInputElement>(null);
   const xmlInput = useRef<HTMLInputElement>(null);
 
@@ -151,9 +153,9 @@ export function ConverterApp() {
         <h1 className="font-display text-lg font-bold tracking-tight">
           USB<span className="text-primary">→</span>NML
         </h1>
-        <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to Traktor Pro 4, no file copying</span>
+        <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to any DJ software, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <DesktopSetupDialog />
+          {!isDesktop && <DesktopSetupDialog />}
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
@@ -216,8 +218,8 @@ export function ConverterApp() {
           <h2 className="font-display text-2xl font-bold">Plug in a Rekordbox USB</h2>
           <p className="max-w-md text-sm text-muted-foreground">
             Choose the stick's root folder (e.g. <span className="font-mono">E:\</span>). We read{" "}
-            <span className="font-mono">PIONEER/rekordbox/export.pdb</span> and the analysis files, then build a Traktor
-            playlist that points at the audio on the stick.
+            <span className="font-mono">PIONEER/rekordbox/export.pdb</span> and the analysis files, then build playlists
+            for Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, or M3U8 that point at the audio on the stick.
           </p>
           <Button onClick={pickDrive}>
             <Usb className="h-4 w-4" /> Open USB drive

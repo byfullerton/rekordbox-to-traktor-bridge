@@ -34,8 +34,9 @@ export function DesktopSetupDialog() {
           <p className="text-muted-foreground">
             If the project is connected to GitHub, every push builds the app automatically. Open your repository's{" "}
             <b>Actions</b> tab, choose the latest <b>Build Windows EXE</b> run, and download{" "}
-            <span className="font-mono">USB-NML-Windows.zip</span>. Unzip it and run{" "}
-            <span className="font-mono">USB-NML.exe</span>. Tagged pushes also publish the zip as a GitHub Release.
+            <span className="font-mono">USB-DJ-Bridge-Setup.exe</span> (GitHub wraps it in a zip; open it to get the one
+            file). Run it to install the app into your Programs folder with Start menu and desktop shortcuts. Tagged pushes
+            also publish the setup file as a GitHub Release.
           </p>
         </div>
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Or build it yourself</p>

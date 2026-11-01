@@ -30,18 +30,24 @@ jobs:
       - name: Package Windows app
         run: npm run electron:package
 
-      - name: Zip the app folder
-        shell: pwsh
-        run: Compress-Archive -Path electron-release/USB-NML-win32-x64 -DestinationPath USB-NML-Windows.zip -Force
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
 
-      - name: Upload artifact
+      - name: Build single-file installer
+        shell: pwsh
+        run: |
+          $iscc = Get-ChildItem "C:\Program Files (x86)\Inno Setup*\ISCC.exe", "C:\Program Files\Inno Setup*\ISCC.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          & $iscc.FullName electron\installer.iss
+          Copy-Item electron-release\USB-DJ-Bridge-Setup.exe USB-DJ-Bridge-Setup.exe
+
+      - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: USB-NML-Windows
-          path: USB-NML-Windows.zip
+          name: USB-DJ-Bridge-Setup
+          path: USB-DJ-Bridge-Setup.exe
 
       - name: Create GitHub Release (tags only)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: USB-NML-Windows.zip
+          files: USB-DJ-Bridge-Setup.exe

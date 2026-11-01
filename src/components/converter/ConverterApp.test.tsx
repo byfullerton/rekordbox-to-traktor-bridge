@@ -42,3 +42,13 @@ it("exports every checked playlist separately, regardless of the active playlist
     ]);
   expect(new Set([...doc.querySelectorAll("PLAYLIST")].map((node) => node.getAttribute("UUID"))).size).toBe(2);
 });
+it("hides the desktop setup button inside the desktop app", async () => {
+  window.usbBridge = { pickFolder: vi.fn(), readFile: vi.fn(), saveFile: vi.fn() };
+  render(<ConverterApp />);
+  await waitFor(() => expect(screen.queryByRole("button", { name: /Desktop \(\.exe\) Setup/ })).toBeNull());
+});
+
+it("shows the desktop setup button in the browser", () => {
+  render(<ConverterApp />);
+  expect(screen.getByRole("button", { name: /Desktop \(\.exe\) Setup/ })).toBeTruthy();
+});

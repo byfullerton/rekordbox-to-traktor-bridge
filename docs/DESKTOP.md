@@ -1,6 +1,6 @@
 # USB→NML: Windows desktop build
 
-Converts a Rekordbox-exported USB stick into a Traktor Pro 4 `.nml` file. Audio stays on the stick: every
+Converts a Rekordbox-exported USB stick into playlists for Traktor Pro 4, VirtualDJ, Serato, Engine DJ, Algoriddim djay, Mixxx, and M3U8. Audio stays on the stick: every
 `LOCATION` points at the drive letter, for example `VOLUME="E:" DIR="/:Contents/:Artist/:Album/:" FILE="Track.mp3"`.
 
 ## What is read
@@ -17,10 +17,10 @@ Converts a Rekordbox-exported USB stick into a Traktor Pro 4 `.nml` file. Audio 
 Every push to GitHub runs `.github/workflows/build-windows-exe.yml`, which builds the app on Windows.
 
 1. Open the repository on GitHub and go to the **Actions** tab.
-2. Open the latest **Build Windows EXE** run and download the **USB-NML-Windows** artifact. The download is `USB-NML-Windows.zip`.
-3. Unzip it and run `USB-NML-win32-x64/USB-NML.exe`.
+2. Open the latest **Build Windows EXE** run and download the **USB-DJ-Bridge-Setup** artifact (GitHub wraps it in a zip containing the single `USB-DJ-Bridge-Setup.exe`).
+3. Run `USB-DJ-Bridge-Setup.exe`. It installs the app and its support files into `%LOCALAPPDATA%\Programs\USB DJ Bridge`, adds Start menu and desktop shortcuts, and registers an uninstaller. No admin rights needed.
 
-You can also start a build by hand with **Run workflow** on the Actions tab. When you push a tag (for example `v1.0.0`), the zip is attached to a GitHub Release as well.
+You can also start a build by hand with **Run workflow** on the Actions tab. When you push a tag (for example `v1.0.0`), the setup file is attached to a GitHub Release as well.
 
 ## Build it yourself (on Windows)
 
@@ -41,7 +41,7 @@ These scripts are already in `package.json`:
 ```
 
 - `npm run electron:start`: runs the desktop app.
-- `npm run electron:package`: writes `electron-release/USB-NML-win32-x64/USB-NML.exe`. Zip that folder to share it.
+- `npm run electron:package`: writes `electron-release/USB-NML-win32-x64/USB-NML.exe`. To make the single setup file locally, install Inno Setup and run `ISCC electron\\installer.iss`; it writes `electron-release/USB-DJ-Bridge-Setup.exe`.
 
 ## Using it
 

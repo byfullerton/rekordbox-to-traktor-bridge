@@ -4,10 +4,10 @@ import { ConverterApp } from "@/components/converter/ConverterApp";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "USB→NML · Rekordbox USB to Traktor Pro 4" },
-      { name: "description", content: "Turn a Rekordbox USB stick into a Traktor Pro 4 NML playlist with cues and beatgrids, without copying audio." },
-      { property: "og:title", content: "USB→NML · Rekordbox USB to Traktor Pro 4" },
-      { property: "og:description", content: "Convert Rekordbox USB exports into Traktor NML playlists that play straight from the stick." },
+      { title: "USB DJ Bridge · Rekordbox USB to any DJ software" },
+      { name: "description", content: "Turn a Rekordbox USB stick into playlists for Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, and M3U8, without copying audio." },
+      { property: "og:title", content: "USB DJ Bridge · Rekordbox USB to any DJ software" },
+      { property: "og:description", content: "Convert Rekordbox USB exports into playlists for any major DJ software that play straight from the stick." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
