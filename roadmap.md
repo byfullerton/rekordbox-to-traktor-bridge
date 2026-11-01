@@ -1,6 +1,6 @@
 # Playlist batch export
-- [ ] Correct importer-facing batch files so each selected playlist has its own original name and suffix.
-- [ ] Verify batch download and desktop saving with regression tests and an end-to-end export.
+- [x] Correct importer-facing batch files so each selected playlist has its own original name and suffix.
+- [x] Verify browser batch and single downloads end-to-end, and desktop saving through regression tests; native DJ-software import and Windows execution require a new installer and Windows testing.
 - [x] Diagnose why multiple selected playlists appear as only one: reproduced colliding playlist identities and corrected them.
 - [x] Verify selected playlists remain distinct, with their own track order.
 - [x] Run regression tests and the full test suite.
