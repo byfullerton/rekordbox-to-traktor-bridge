@@ -247,3 +247,29 @@ describe("PDB parser", () => {
     expect(lib.root.children[0]!.children[0]).toMatchObject({ name: "Set", trackIds: [42] });
   });
 });
+
+describe("track comments", () => {
+  const libWith = (t: Track): Library => ({
+    source: "xml",
+    tracks: new Map([[t.id, t]]),
+    root: { id: 0, name: "ROOT", isFolder: true, children: [{ id: 1, name: "Set", isFolder: false, children: [], trackIds: [t.id] }], trackIds: [] },
+  });
+
+  it("writes the Rekordbox comment into the Traktor INFO COMMENT attribute", () => {
+    const nml = buildNml(libWith(track({ comment: "Peak time weapon" })), { drive: "E:" });
+    expect(nml).toContain('COMMENT="Peak time weapon"');
+  });
+
+  it("omits the COMMENT attribute when the track has no comment", () => {
+    const nml = buildNml(libWith(track()), { drive: "E:" });
+    expect(nml).not.toContain("COMMENT=");
+  });
+
+  it("reads the Comments attribute from rekordbox.xml", () => {
+    const lib = parseRekordboxXml(`
+      <DJ_PLAYLISTS><COLLECTION Entries="1">
+        <TRACK TrackID="1" Name="One" Artist="A" Comments="Warm-up only" Location="file://localhost/E:/Contents/one.mp3"/>
+      </COLLECTION><PLAYLISTS><NODE Type="0" Name="ROOT"/></PLAYLISTS></DJ_PLAYLISTS>`);
+    expect(lib.tracks.get(1)?.comment).toBe("Warm-up only");
+  });
+});
