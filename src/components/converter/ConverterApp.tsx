@@ -45,6 +45,7 @@ export function ConverterApp() {
   const [target, setTarget] = useState<TargetId | "all">("traktor");
   const [track, setTrack] = useState<Track | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showSmartScreenHint, setShowSmartScreenHint] = useState(false);
   useEffect(() => setIsDesktop(!!window.usbBridge), []);
   const dirInput = useRef<HTMLInputElement>(null);
   const xmlInput = useRef<HTMLInputElement>(null);
@@ -163,7 +164,13 @@ export function ConverterApp() {
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isDesktop && (
             <Button asChild size="sm">
-              <a href={WINDOWS_DOWNLOAD_URL}>
+              <a
+                href={WINDOWS_DOWNLOAD_URL}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowSmartScreenHint(true);
+                }}
+              >
                 <Download className="h-4 w-4" /> Want to use this tool offline? Download for Windows here
               </a>
             </Button>
@@ -299,6 +306,41 @@ export function ConverterApp() {
           <aside className="hidden overflow-auto border-l border-border bg-card/50 p-4 lg:block">
             {track ? <TrackDetail track={track} drive={drive} /> : <p className="text-sm text-muted-foreground">Select a track to see its cues and file location.</p>}
           </aside>
+        </div>
+      )}
+
+      {showSmartScreenHint && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Windows download note"
+        >
+          <div className="w-full max-w-md space-y-4 rounded-lg border border-border bg-card p-6 shadow-lg">
+            <h2 className="font-display text-lg font-bold">One quick note before you install</h2>
+            <p className="text-sm text-muted-foreground">
+              The first time you run the installer, Windows may show a blue <strong className="text-foreground">"Windows protected your PC"</strong>{" "}
+              message. That's normal for a new app, and it's safe to continue:
+            </p>
+            <ol className="list-decimal space-y-1 pl-5 text-sm">
+              <li>
+                Click <strong className="text-foreground">"More info"</strong> under the message.
+              </li>
+              <li>
+                Click <strong className="text-foreground">"Run anyway"</strong>.
+              </li>
+            </ol>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" size="sm" onClick={() => setShowSmartScreenHint(false)}>
+                Cancel
+              </Button>
+              <Button asChild size="sm">
+                <a href={WINDOWS_DOWNLOAD_URL} onClick={() => setShowSmartScreenHint(false)}>
+                  <Download className="h-4 w-4" /> Download now
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
