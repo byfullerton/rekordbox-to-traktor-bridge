@@ -231,7 +231,7 @@ export function ConverterApp() {
               <option value="all">All software</option>
             </select>
           </label>
-          <Button size="sm" variant="outline" disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
+          <Button size="sm" variant={lib && checked.size > 0 ? "exportReady" : "outline"} disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
             <Download className="h-4 w-4" /> Export selected ({checked.size})
           </Button>
           <Button size="sm" disabled={!lib || exporting} onClick={() => exportNml(true)}>

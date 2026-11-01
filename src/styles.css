@@ -48,6 +48,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-export-ready: var(--export-ready);
   --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -67,6 +68,8 @@
 :root {
   --radius: 0.75rem;
   --gradient-brand: linear-gradient(135deg, oklch(0.76 0.14 198), oklch(0.62 0.16 258));
+  --export-ready: oklch(0.78 0.2 150);
+  --shadow-export-ready: 0 0 14px color-mix(in oklab, var(--export-ready) 40%, transparent);
   --background: oklch(0.14 0.01 260);
   --foreground: oklch(0.95 0.01 260);
   --card: oklch(0.18 0.012 260);
@@ -149,4 +152,8 @@
 
 @utility bg-gradient-brand {
   background-image: var(--gradient-brand);
+}
+
+@utility shadow-export-ready {
+  box-shadow: var(--shadow-export-ready);
 }
