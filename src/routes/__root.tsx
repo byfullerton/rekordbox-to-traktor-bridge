@@ -78,9 +78,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "USB→NML" },
+      { title: "Universal Playlist Reader" },
       { name: "description", content: "Rekordbox USB to Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, and M3U8 converter" },
-      { property: "og:title", content: "USB→NML" },
+      { property: "og:title", content: "Universal Playlist Reader" },
       { property: "og:description", content: "Rekordbox USB to Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, and M3U8 converter" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
