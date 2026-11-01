@@ -188,10 +188,10 @@ export function ConverterApp() {
         <h1 className="font-display text-lg font-bold tracking-tight">
           USB <span className="text-primary">DJ Bridge</span>
         </h1>
-        <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB Playlists to any DJ software, no file copying</span>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <span className="text-xs text-muted-foreground">Rekordbox USB Playlists to any DJ software, no file copying</span>
           {!isDesktop && (
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="h-auto max-w-full self-end whitespace-normal text-right md:shrink-0">
               <a
                 href={WINDOWS_DOWNLOAD_URL}
                 onClick={(e) => {
@@ -203,6 +203,8 @@ export function ConverterApp() {
               </a>
             </Button>
           )}
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           {isDesktop && window.usbBridge?.checkForUpdates && <UpdateButton bridge={window.usbBridge as UpdaterBridge} />}
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
