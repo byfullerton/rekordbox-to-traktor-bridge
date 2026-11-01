@@ -13,13 +13,15 @@ import type { FileSource, Library, PlaylistNode, Track } from "@/lib/rekordbox/t
 import { dirHandleSource, fileListSource, loadUsbLibrary } from "@/lib/rekordbox/loader";
 import { parseRekordboxXml } from "@/lib/rekordbox/xml";
 import { collectTrackIds } from "@/lib/rekordbox/nml";
-import { TARGETS, buildTarget, buildZip, type TargetId } from "@/lib/rekordbox/exporters";
+import { TARGETS, buildTarget, type ExportFile, type TargetId } from "@/lib/rekordbox/exporters";
+import { saveFilesToDirectory } from "@/lib/rekordbox/save-files";
 import { normalizeDrive, toTraktorLocation } from "@/lib/rekordbox/path";
 
 interface UsbBridge {
   pickFolder(): Promise<string | null>;
   readFile(absPath: string): Promise<Uint8Array | null>;
   saveFile(name: string, contents: string | Uint8Array): Promise<boolean>;
+  saveFiles?(files: ExportFile[]): Promise<boolean>;
   checkForUpdates?: UpdaterBridge["checkForUpdates"];
   installUpdate?: UpdaterBridge["installUpdate"];
 }
@@ -38,6 +40,8 @@ export function ConverterApp() {
   const [lib, setLib] = useState<Library | null>(null);
   const [drive, setDrive] = useState("E:");
   const [label, setLabel] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [exportStatus, setExportStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [checked, setChecked] = useState<Set<number>>(new Set());
@@ -125,7 +129,7 @@ export function ConverterApp() {
   }
 
   async function exportNml(all: boolean) {
-    if (!lib) return;
+    if (!lib || exporting) return;
     let d: string;
     try {
       d = normalizeDrive(drive);
@@ -135,17 +139,37 @@ export function ConverterApp() {
     const nodes = all ? lib.root.children : selectedNodes();
     if (!nodes.length) return setError("Tick at least one playlist, or export all.");
     const opts = { drive: d, nodes, folderName: `USB ${d} ${label}`.trim() };
+    setError(null);
+    setExportStatus("");
+    setExporting(true);
     try {
-      const files = target === "all" ? null : buildTarget(lib, target, opts);
-      if (files?.length === 0) return setError("No playlists in the selection.");
-      const single = files?.length === 1 ? files[0] : undefined;
-      const ids = target === "all" ? TARGETS.map((t) => t.id) : [target];
-      const name = single?.path ?? (target === "all" ? `usb-${d[0]}-all-dj-software.zip` : `usb-${d[0]}-${target}.zip`);
-      const data = single?.data ?? buildZip(lib, ids, opts);
-      if (window.usbBridge) return void (await window.usbBridge.saveFile(name, data));
-      download(name, data, single ? "application/octet-stream" : "application/zip");
+      const files = target === "all"
+        ? TARGETS.flatMap((t) => buildTarget(lib, t.id, opts).map((file) => ({ ...file, path: `${t.label}/${file.path}` })))
+        : buildTarget(lib, target, opts);
+      if (!files.length) return setError("No playlists in the selection.");
+      const bridge = window.usbBridge;
+      if (bridge) {
+        if (files.length === 1 && files[0] && !files[0].path.includes("/")) {
+          if (!await bridge.saveFile(files[0].path, files[0].data)) return;
+        } else {
+          if (!bridge.saveFiles) throw new Error("Update the desktop app to save multiple playlists directly.");
+          if (!await bridge.saveFiles(files)) return;
+        }
+      } else {
+        const picker = (window as Window & { showDirectoryPicker?: (options: { mode: "readwrite" }) => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker;
+        if (picker && window.self === window.top && (files.length > 1 || files[0]?.path.includes("/"))) {
+          await saveFilesToDirectory(await picker.call(window, { mode: "readwrite" }), files);
+        } else {
+          for (const file of files) download(file.path.split("/").pop() ?? file.path, file.data, "application/octet-stream");
+          setExportStatus(files.length > 1 ? "Playlist downloads started. Allow multiple downloads if your browser asks." : "Playlist download started.");
+          return;
+        }
+      }
+      setExportStatus(`${files.length} playlist file${files.length === 1 ? "" : "s"} saved.`);
     } catch (e) {
-      setError((e as Error).message);
+      if ((e as Error).name !== "AbortError") setError(`Export stopped: ${(e as Error).message}. Any files already saved remain in the destination folder.`);
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -203,13 +227,13 @@ export function ConverterApp() {
                   {t.label} ({t.ext})
                 </option>
               ))}
-              <option value="all">All software (.zip)</option>
+              <option value="all">All software</option>
             </select>
           </label>
-          <Button size="sm" variant="outline" disabled={!lib || !checked.size} onClick={() => exportNml(false)}>
+          <Button size="sm" variant="outline" disabled={!lib || !checked.size || exporting} onClick={() => exportNml(false)}>
             <Download className="h-4 w-4" /> Export selected ({checked.size})
           </Button>
-          <Button size="sm" disabled={!lib} onClick={() => exportNml(true)}>
+          <Button size="sm" disabled={!lib || exporting} onClick={() => exportNml(true)}>
             <Download className="h-4 w-4" /> Export all
           </Button>
         </div>
@@ -230,6 +254,7 @@ export function ConverterApp() {
       </header>
 
       {error && <div className="border-b border-destructive bg-destructive/15 px-4 py-2 text-sm text-destructive">{error}</div>}
+      {exportStatus && <div role="status" className="border-b border-border px-4 py-2 text-sm text-primary">{exportStatus}</div>}
       {progress !== null && (
         <div className="flex items-center gap-3 px-4 py-2 text-xs text-muted-foreground">
           Reading analysis files… <Progress value={progress} className="h-1.5 w-64" />

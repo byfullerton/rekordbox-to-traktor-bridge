@@ -1,4 +1,4 @@
-# USB→NML: Windows desktop build
+# USB DJ Bridge: Windows desktop build
 
 Converts a Rekordbox-exported USB stick into playlists for Traktor Pro 4, VirtualDJ, Serato, Engine DJ, Algoriddim djay, Mixxx, and M3U8. Audio stays on the stick: every
 `LOCATION` points at the drive letter, for example `VOLUME="E:" DIR="/:Contents/:Artist/:Album/:" FILE="Track.mp3"`.
@@ -47,7 +47,10 @@ These scripts are already in `package.json`:
 
 1. Plug in the USB stick, then click **Open USB drive** and pick its root (for example `E:\`). The drive letter fills in automatically.
 2. Browse playlists, tracks, and cues. Tick playlists, or use **Export all**.
-3. Save the `.nml` file and drag it into Traktor's browser (or use *Import Collection*). Keep the stick on the same drive letter.
+3. For multiple playlists, choose a destination folder (the desktop picker defaults to the connected USB). Each playlist is saved as its own named file, without a ZIP, and existing files are preserved. All-software exports use separate software folders; Serato crates use `Subcrates`. Import the files into the target software; keep the stick on the same drive letter. Writing files to a USB does not automatically register them in the target software's library.
+4. Supporting browsers also offer a destination folder; other browsers download each file separately and may ask permission for multiple downloads. Serato users must place downloaded crates in `Subcrates` when no folder picker is available.
+
+The desktop build embeds the supplied logo during packaging, so it displays offline. Packaging needs internet access to retrieve that logo; using the installed converter does not.
 
 ## Notes on mapping
 
