@@ -289,7 +289,7 @@ export function ConverterApp() {
             <span className="font-mono">PIONEER/rekordbox/export.pdb</span> and the analysis files, then build playlists
             for Traktor, VirtualDJ, Serato, Engine DJ, djay, Mixxx, or M3U8 that point at the audio on the stick.
           </p>
-          <Button onClick={pickDrive}>
+          <Button onClick={openUsb}>
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
         </div>
