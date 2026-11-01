@@ -45,6 +45,7 @@ export function ConverterApp() {
   const [target, setTarget] = useState<TargetId | "all">("traktor");
   const [track, setTrack] = useState<Track | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showSmartScreenHint, setShowSmartScreenHint] = useState(false);
   useEffect(() => setIsDesktop(!!window.usbBridge), []);
   const dirInput = useRef<HTMLInputElement>(null);
   const xmlInput = useRef<HTMLInputElement>(null);
