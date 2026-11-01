@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// @ts-expect-error plain CommonJS helper shared with the Electron main process (no type declarations)
 import updater from "../../electron/update.cjs";
 
 const { isNewer, evaluateRelease } = updater as {
