@@ -184,14 +184,14 @@ export function ConverterApp() {
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-3">
-        <img src={logoAsset.url} alt="USB DJ Bridge logo" className="h-8 w-8 rounded" />
-        <h1 className="font-display text-lg font-bold tracking-tight">
+        <div className="flex w-full flex-wrap items-center gap-3 md:flex-nowrap">
+        <img src={logoAsset.url} alt="USB DJ Bridge logo" className="h-8 w-8 shrink-0 rounded" />
+        <h1 className="shrink-0 font-display text-lg font-bold tracking-tight">
           USB <span className="text-primary">DJ Bridge</span>
         </h1>
-        <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <span className="text-xs text-muted-foreground">Rekordbox USB Playlists to any DJ software, no file copying</span>
+          <span className="w-full text-xs text-muted-foreground md:w-auto md:min-w-0 md:flex-1">Rekordbox USB Playlists to any DJ software, no file copying</span>
           {!isDesktop && (
-            <Button asChild size="sm" className="h-auto max-w-full self-end whitespace-normal text-right md:shrink-0">
+            <Button asChild size="sm" className="ml-auto h-auto min-h-8 max-w-full whitespace-normal md:h-8 md:shrink-0 md:whitespace-nowrap">
               <a
                 href={WINDOWS_DOWNLOAD_URL}
                 onClick={(e) => {
