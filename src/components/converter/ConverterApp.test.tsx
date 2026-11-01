@@ -85,3 +85,21 @@ it("shows the SmartScreen note only after clicking download, then starts the dow
   fireEvent.click(downloadNow);
   expect(screen.queryByRole("dialog")).toBeNull();
 });
+
+it("asks web visitors to verify the drive letter before opening the USB", () => {
+  render(<ConverterApp />);
+  fireEvent.click(screen.getAllByRole("button", { name: /Open USB drive/ })[0]!);
+  const dialog = screen.getByRole("dialog", { name: "Verify drive letter" });
+  fireEvent.change(screen.getByRole("combobox", { name: "Drive letter to verify" }), { target: { value: "F:" } });
+  expect(screen.getByRole("button", { name: /F: is correct, open USB/ })).toBeTruthy();
+  expect(dialog).toBeTruthy();
+});
+
+it("skips the drive check in the desktop app", async () => {
+  const pickFolder = vi.fn().mockResolvedValue(null);
+  window.usbBridge = { pickFolder, readFile: vi.fn(), saveFile: vi.fn() };
+  render(<ConverterApp />);
+  fireEvent.click(screen.getAllByRole("button", { name: /Open USB drive/ })[0]!);
+  await waitFor(() => expect(pickFolder).toHaveBeenCalledOnce());
+  expect(screen.queryByRole("dialog", { name: "Verify drive letter" })).toBeNull();
+});
