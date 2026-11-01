@@ -45,12 +45,12 @@ it("exports every checked playlist separately, regardless of the active playlist
 it("hides the desktop setup button inside the desktop app", async () => {
   window.usbBridge = { pickFolder: vi.fn(), readFile: vi.fn(), saveFile: vi.fn() };
   render(<ConverterApp />);
-  await waitFor(() => expect(screen.queryByRole("button", { name: /Desktop \(\.exe\) Setup/ })).toBeNull());
+  await waitFor(() => expect(screen.queryByRole("link", { name: /Download for Windows/ })).toBeNull());
 });
 
 it("shows the desktop setup button in the browser", () => {
   render(<ConverterApp />);
-  expect(screen.getByRole("button", { name: /Desktop \(\.exe\) Setup/ })).toBeTruthy();
+  expect(screen.getByRole("link", { name: /Download for Windows/ })).toBeTruthy();
 });
 
 it("links the Windows download straight to the latest setup file", () => {
