@@ -2,11 +2,16 @@
 ; The app's support files are installed into the user's Programs folder, not next to the download.
 #define AppName "USB DJ Bridge"
 #define AppExe "USB-NML.exe"
+#ifndef AppVersion
+  #define AppVersion "1.0.0"
+#endif
 
 [Setup]
 AppId={{6E0B5A61-3C2B-4C3E-9C1D-USBDJBRIDGE01}
 AppName={#AppName}
-AppVersion=1.0.0
+AppVersion={#AppVersion}
+CloseApplications=yes
+RestartApplications=no
 AppPublisher=USB DJ Bridge
 DefaultDirName={localappdata}\Programs\{#AppName}
 DefaultGroupName={#AppName}
@@ -32,3 +37,5 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "Launch {#AppName}"; Flags: nowait postinstall skipifsilent
+; After a silent auto-update, reopen the app automatically.
+Filename: "{app}\{#AppExe}"; Flags: nowait; Check: WizardSilent
