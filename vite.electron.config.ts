@@ -13,7 +13,8 @@ export default defineConfig({
       name: "bundle-offline-logo",
       enforce: "pre",
       async transform(_code, id) {
-        if (id.split("?")[0] !== path.resolve(__dirname, "src/assets/logo.png.asset.json")) return;
+        const norm = (p: string) => p.split("?")[0]!.replace(/\\/g, "/").toLowerCase();
+        if (norm(id) !== norm(path.resolve(__dirname, "src/assets/logo.png.asset.json"))) return;
         const response = await fetch(new URL(logoAsset.url, "https://rekordbox-to-traktor-bridge.lovable.app"));
         if (!response.ok) throw new Error(`Cannot bundle desktop logo (${response.status})`);
         const bytes = Buffer.from(await response.arrayBuffer());
