@@ -61,11 +61,6 @@ function uniqueNames(items: { names: string[] }[], sep: string): string[] {
     const base = names.map(safeName).join(sep);
     let name = base;
     let n = 2;
-    while (used.has(name.toLowerCase())) {
-      name = `${base} (${n++})`;
-      if (reserved.has(name.toLowerCase())) continue;
-      break;
-    }
     // A generated name must not overwrite another generated or original name.
     while (used.has(name.toLowerCase()) || (name !== base && reserved.has(name.toLowerCase()))) {
       name = `${base} (${n++})`;

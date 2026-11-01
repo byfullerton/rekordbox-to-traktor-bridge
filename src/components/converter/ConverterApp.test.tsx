@@ -83,6 +83,7 @@ it("shows the SmartScreen note only after clicking download, then starts the dow
   expect(downloadNow.getAttribute("href")).toBe(
     "https://github.com/byfullerton/rekordbox-to-traktor-bridge/releases/latest/download/USB-DJ-Bridge-Setup.exe",
   );
+  downloadNow.addEventListener("click", (event) => event.preventDefault());
   fireEvent.click(downloadNow);
   expect(screen.queryByRole("dialog")).toBeNull();
 });
