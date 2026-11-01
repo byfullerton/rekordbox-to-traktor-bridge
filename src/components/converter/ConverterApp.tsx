@@ -402,6 +402,7 @@ function TrackDetail({ track, drive }: { track: Track; drive: string }) {
         <dt className="text-muted-foreground">BPM</dt><dd className="text-primary">{track.bpm.toFixed(2)}</dd>
         <dt className="text-muted-foreground">Key</dt><dd>{track.key || "—"}</dd>
         <dt className="text-muted-foreground">Genre</dt><dd>{track.genre || "—"}</dd>
+        <dt className="text-muted-foreground">Comment</dt><dd className="break-words">{track.comment || "—"}</dd>
         <dt className="text-muted-foreground">Length</dt><dd>{fmtTime(track.durationSec * 1000)}</dd>
         <dt className="text-muted-foreground">Grid start</dt><dd>{track.beatgrid[0] ? fmtTime(track.beatgrid[0].startMs) : "—"}</dd>
       </dl>
