@@ -123,7 +123,10 @@ export function buildNml(lib: Library, opts: NmlOptions): string {
     children: nodes,
     trackIds: [],
   };
-  const inner = nodeElement(wrapper, lib, opts.drive);
+  // Standalone playlist files expose the named playlist directly to importers.
+  const inner = opts.folderName
+    ? nodeElement(wrapper, lib, opts.drive)
+    : nodes.map((node) => nodeElement(node, lib, opts.drive)).join("\n");
   return [
     `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>`,
     `<NML VERSION="19"><HEAD COMPANY="www.native-instruments.com" PROGRAM="Traktor Pro 4"></HEAD>`,
@@ -134,7 +137,7 @@ export function buildNml(lib: Library, opts: NmlOptions): string {
     `<SETS ENTRIES="0"></SETS>`,
     `<PLAYLISTS>`,
     `<NODE TYPE="FOLDER" NAME="$ROOT">`,
-    `<SUBNODES COUNT="1">`,
+    `<SUBNODES COUNT="${opts.folderName ? 1 : nodes.length}">`,
     inner,
     `</SUBNODES>`,
     `</NODE>`,

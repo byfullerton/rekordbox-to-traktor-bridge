@@ -19,7 +19,7 @@ import { normalizeDrive, toTraktorLocation } from "@/lib/rekordbox/path";
 interface UsbBridge {
   pickFolder(): Promise<string | null>;
   readFile(absPath: string): Promise<Uint8Array | null>;
-  saveFile(name: string, contents: string): Promise<boolean>;
+  saveFile(name: string, contents: string | Uint8Array): Promise<boolean>;
   checkForUpdates?: UpdaterBridge["checkForUpdates"];
   installUpdate?: UpdaterBridge["installUpdate"];
 }
@@ -73,7 +73,7 @@ export function ConverterApp() {
       const root = await bridge.pickFolder();
       if (!root) return;
       const m = root.match(/^([a-zA-Z]):/);
-      if (m) setDrive(`${m[1]!.toUpperCase()}:`);
+      if (m?.[1]) setDrive(`${m[1].toUpperCase()}:`);
       const base = root.replace(/[\\/]+$/, "");
       return load({ read: (p) => bridge.readFile(base + p.replace(/\//g, "\\")) }, root);
     }
@@ -135,14 +135,18 @@ export function ConverterApp() {
     const nodes = all ? lib.root.children : selectedNodes();
     if (!nodes.length) return setError("Tick at least one playlist, or export all.");
     const opts = { drive: d, nodes, folderName: `USB ${d} ${label}`.trim() };
-    if (target === "traktor") {
-      const [f] = buildTarget(lib, "traktor", opts);
-      if (window.usbBridge) return void (await window.usbBridge.saveFile(f!.path, f!.data as string));
-      return download(f!.path, f!.data, "application/xml");
+    try {
+      const files = target === "all" ? null : buildTarget(lib, target, opts);
+      if (files?.length === 0) return setError("No playlists in the selection.");
+      const single = files?.length === 1 ? files[0] : undefined;
+      const ids = target === "all" ? TARGETS.map((t) => t.id) : [target];
+      const name = single?.path ?? (target === "all" ? `usb-${d[0]}-all-dj-software.zip` : `usb-${d[0]}-${target}.zip`);
+      const data = single?.data ?? buildZip(lib, ids, opts);
+      if (window.usbBridge) return void (await window.usbBridge.saveFile(name, data));
+      download(name, data, single ? "application/octet-stream" : "application/zip");
+    } catch (e) {
+      setError((e as Error).message);
     }
-    const ids = target === "all" ? TARGETS.map((t) => t.id) : [target];
-    const name = target === "all" ? `usb-${d[0]}-all-dj-software.zip` : `usb-${d[0]}-${target}.zip`;
-    download(name, buildZip(lib, ids, opts), "application/zip");
   }
 
   const toggle = (n: PlaylistNode) =>
