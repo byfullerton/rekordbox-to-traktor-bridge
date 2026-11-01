@@ -45,16 +45,40 @@ describe("multi-software exporters", () => {
 
   it("keeps every playlist as its own file, even with duplicate names", () => {
     const files = buildTarget(lib, "m3u8", opts).map((f) => f.path);
-    expect(files).toEqual(["Warmup.m3u8", "Club - Peak.m3u8", "Warmup (2).m3u8"]);
-    expect(buildTarget(lib, "serato", opts).map((f) => f.path)).toContain("Subcrates/Club%%Peak.crate");
+    expect(files).toEqual(["Warmup - Rekordbox USB.m3u8", "Club - Peak - Rekordbox USB.m3u8", "Warmup (2) - Rekordbox USB.m3u8"]);
+    expect(buildTarget(lib, "serato", opts).map((f) => f.path)).toContain("Subcrates/Club%%Peak - Rekordbox USB.crate");
   });
 
   it("bundles all software into separate folders", () => {
     const z = unzipSync(buildZip(lib, TARGETS.map((t) => t.id), opts));
     const names = Object.keys(z);
     expect(names).toContain("Traktor Pro 4/rekordbox-usb-F.nml");
-    expect(names).toContain("Mixxx/Club - Peak.m3u8");
-    expect(names).toContain("VirtualDJ/Warmup (2).vdjfolder");
-    expect(strFromU8(z["Engine DJ/Warmup (2).m3u8"]!)).not.toContain("one.mp3");
+    expect(names).toContain("Mixxx/Club - Peak - Rekordbox USB.m3u8");
+    expect(names).toContain("VirtualDJ/Warmup (2) - Rekordbox USB.vdjfolder");
+    expect(strFromU8(z["Engine DJ/Warmup (2) - Rekordbox USB.m3u8"]!)).not.toContain("one.mp3");
+  });
+});
+
+import { describe as d2, it as i2, expect as e2 } from "vitest";
+import { buildTarget as bt2 } from "./exporters";
+import { buildNml as bn2 } from "./nml";
+d2("playlist name suffix", () => {
+  const lib = {
+    tracks: new Map([[1, { id: 1, title: "T", artist: "A", album: "", genre: "", bpm: 120, key: "", durationSec: 60, bitrate: 320, filePath: "/Contents/t.mp3", cues: [], beatgrid: [] }]]),
+    root: { id: 0, name: "root", isFolder: true, trackIds: [], children: [] },
+  } as never;
+  const nodes = [
+    { id: 1, name: "Techno", isFolder: false, trackIds: [1], children: [] },
+    { id: 2, name: "House", isFolder: false, trackIds: [1], children: [] },
+  ];
+  i2("appends ' - Rekordbox USB' to each separate playlist file", () => {
+    const files = bt2(lib, "m3u8", { drive: "E", nodes, folderName: "x" });
+    e2(files.map((f) => f.path)).toEqual(["Techno - Rekordbox USB.m3u8", "House - Rekordbox USB.m3u8"]);
+    e2(bt2(lib, "serato", { drive: "E", nodes, folderName: "x" })[0]!.path).toBe("Subcrates/Techno - Rekordbox USB.crate");
+  });
+  i2("appends the suffix to Traktor playlist names", () => {
+    const nml = bn2(lib, { drive: "E", nodes });
+    e2(nml).toContain('NAME="Techno - Rekordbox USB"');
+    e2(nml).toContain('NAME="House - Rekordbox USB"');
   });
 });
