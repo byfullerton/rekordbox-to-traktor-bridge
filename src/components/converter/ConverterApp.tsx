@@ -207,6 +207,7 @@ export function ConverterApp() {
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
           </Button>
+          <span className="text-xs text-muted-foreground">or</span>
           <Button variant="secondary" size="sm" onClick={() => xmlInput.current?.click()}>
             Load rekordbox.xml
           </Button>
