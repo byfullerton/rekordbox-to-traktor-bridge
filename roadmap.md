@@ -6,4 +6,4 @@
 - [x] Desktop app checks for updates and installs them automatically
 - [x] Blue buttons matching muzicspace.com, new logo and tab icon
 - [x] Exported playlists named "<name> - Rekordbox USB"
-- [ ] Carry Rekordbox track Comments into DJ software exports (NML INFO COMMENT, VDJ Tags, rekordbox.xml Comments attr)
+- [x] Carry Rekordbox track Comments into DJ software exports (NML INFO COMMENT, VDJ Tags, rekordbox.xml Comments attr)
