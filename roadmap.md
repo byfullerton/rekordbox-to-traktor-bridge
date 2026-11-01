@@ -1,4 +1,7 @@
 # Playlist batch export
+- [ ] Bundle the supplied logo for offline desktop use.
+- [ ] Save batch playlists directly into a chosen folder, without a ZIP or audio copying.
+- [ ] Run tests, verify direct export, and publish the updated Windows installer.
 - [x] Correct importer-facing batch files so each selected playlist has its own original name and suffix.
 - [x] Verify browser batch and single downloads end-to-end, and desktop saving through regression tests; native DJ-software import and Windows execution require a new installer and Windows testing.
 - [x] Diagnose why multiple selected playlists appear as only one: reproduced colliding playlist identities and corrected them.
