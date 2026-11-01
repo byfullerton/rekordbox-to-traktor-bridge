@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { DesktopSetupDialog } from "./DesktopSetupDialog";
 import { UpdateButton, type UpdaterBridge } from "./UpdateButton";
 
 export const WINDOWS_DOWNLOAD_URL =
@@ -169,7 +168,6 @@ export function ConverterApp() {
               </a>
             </Button>
           )}
-          {!isDesktop && <DesktopSetupDialog />}
           {isDesktop && window.usbBridge?.checkForUpdates && <UpdateButton bridge={window.usbBridge as UpdaterBridge} />}
           <Button onClick={pickDrive} size="sm">
             <Usb className="h-4 w-4" /> Open USB drive
