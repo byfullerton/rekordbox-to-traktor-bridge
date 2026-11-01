@@ -52,3 +52,10 @@ it("shows the desktop setup button in the browser", () => {
   render(<ConverterApp />);
   expect(screen.getByRole("button", { name: /Desktop \(\.exe\) Setup/ })).toBeTruthy();
 });
+
+it("links the Windows download straight to the latest setup file", () => {
+  render(<ConverterApp />);
+  expect(screen.getByRole("link", { name: /Download for Windows/ }).getAttribute("href")).toBe(
+    "https://github.com/byfullerton/rekordbox-to-traktor-bridge/releases/latest/download/USB-DJ-Bridge-Setup.exe",
+  );
+});
