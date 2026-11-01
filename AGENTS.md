@@ -14,3 +14,4 @@
 - The Electron desktop build uses a separate plain-Vite SPA entry (`electron/renderer`, `vite.electron.config.ts`) rendering the same `ConverterApp` — TanStack Start SSR output cannot load over `file://`.
 - Electron renderer accesses the disk only via the `window.usbBridge` preload API (read-only reads plus a save dialog) — audio files are never opened or copied.
 - NML playlist identities use fixed-width ID and counter fields — variable-width concatenation can collide and cause importers to treat distinct playlists as one.
+- Non-Traktor targets (VirtualDJ, Serato, M3U8 family) live in `src/lib/rekordbox/exporters.ts`, writing one file per playlist with de-duplicated names — keeps batch playlists distinct.

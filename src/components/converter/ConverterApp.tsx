@@ -8,7 +8,8 @@ import { DesktopSetupDialog } from "./DesktopSetupDialog";
 import type { FileSource, Library, PlaylistNode, Track } from "@/lib/rekordbox/types";
 import { dirHandleSource, fileListSource, loadUsbLibrary } from "@/lib/rekordbox/loader";
 import { parseRekordboxXml } from "@/lib/rekordbox/xml";
-import { buildNml, collectTrackIds } from "@/lib/rekordbox/nml";
+import { collectTrackIds } from "@/lib/rekordbox/nml";
+import { TARGETS, buildTarget, buildZip, type TargetId } from "@/lib/rekordbox/exporters";
 import { normalizeDrive, toTraktorLocation } from "@/lib/rekordbox/path";
 
 interface UsbBridge {
@@ -35,6 +36,7 @@ export function ConverterApp() {
   const [progress, setProgress] = useState<number | null>(null);
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [active, setActive] = useState<PlaylistNode | null>(null);
+  const [target, setTarget] = useState<TargetId | "all">("traktor");
   const [track, setTrack] = useState<Track | null>(null);
   const dirInput = useRef<HTMLInputElement>(null);
   const xmlInput = useRef<HTMLInputElement>(null);
@@ -106,6 +108,13 @@ export function ConverterApp() {
     return out;
   }
 
+  function download(name: string, data: string | Uint8Array, type: string) {
+    const url = URL.createObjectURL(new Blob([data as BlobPart], { type }));
+    const a = Object.assign(document.createElement("a"), { href: url, download: name });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function exportNml(all: boolean) {
     if (!lib) return;
     let d: string;
@@ -116,13 +125,15 @@ export function ConverterApp() {
     }
     const nodes = all ? lib.root.children : selectedNodes();
     if (!nodes.length) return setError("Tick at least one playlist, or export all.");
-    const xml = buildNml(lib, { drive: d, nodes, folderName: `USB ${d} ${label}`.trim() });
-    const name = `rekordbox-usb-${d[0]}.nml`;
-    if (window.usbBridge) return void (await window.usbBridge.saveFile(name, xml));
-    const url = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
-    const a = Object.assign(document.createElement("a"), { href: url, download: name });
-    a.click();
-    URL.revokeObjectURL(url);
+    const opts = { drive: d, nodes, folderName: `USB ${d} ${label}`.trim() };
+    if (target === "traktor") {
+      const [f] = buildTarget(lib, "traktor", opts);
+      if (window.usbBridge) return void (await window.usbBridge.saveFile(f!.path, f!.data as string));
+      return download(f!.path, f!.data, "application/xml");
+    }
+    const ids = target === "all" ? TARGETS.map((t) => t.id) : [target];
+    const name = target === "all" ? `usb-${d[0]}-all-dj-software.zip` : `usb-${d[0]}-${target}.zip`;
+    download(name, buildZip(lib, ids, opts), "application/zip");
   }
 
   const toggle = (n: PlaylistNode) =>
@@ -152,6 +163,22 @@ export function ConverterApp() {
           <label className="flex items-center gap-1 text-xs text-muted-foreground">
             <HardDrive className="h-4 w-4" /> Drive
             <Input value={drive} onChange={(e) => setDrive(e.target.value)} className="h-8 w-14 font-mono" aria-label="Drive letter" />
+          </label>
+          <label className="flex items-center gap-1 text-xs text-muted-foreground">
+            For
+            <select
+              aria-label="Target software"
+              value={target}
+              onChange={(e) => setTarget(e.target.value as TargetId | "all")}
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground"
+            >
+              {TARGETS.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label} ({t.ext})
+                </option>
+              ))}
+              <option value="all">All software (.zip)</option>
+            </select>
           </label>
           <Button size="sm" variant="outline" disabled={!lib || !checked.size} onClick={() => exportNml(false)}>
             <Download className="h-4 w-4" /> Export selected ({checked.size})
