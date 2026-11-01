@@ -160,7 +160,7 @@ export function ConverterApp() {
         <h1 className="font-display text-lg font-bold tracking-tight">
           USB <span className="text-primary">DJ Bridge</span>
         </h1>
-        <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB to any DJ software, no file copying</span>
+        <span className="hidden text-xs text-muted-foreground md:inline">Rekordbox USB Playlists to any DJ software, no file copying</span>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isDesktop && (
             <Button asChild size="sm">
